@@ -1,0 +1,22 @@
+------Container images:
+
+docker tag minio/minio:RELEASE.2022-02-26T02-54-46Z customproxy/minio:minopui-ci-RELEASE.2022-02-26T02-54-46Z
+
+docker tag minio/kes:v0.17.6 customproxy/minio:minopui-ci-kes-v0.17.6
+
+-------Log search:
+
+docker tag minio/operator:v4.4.22  customproxy/minio:minopui-ls-minio-operator-v4.4.22
+
+docker tag library/postgres:13  customproxy/minio:minopui-ls-library-postgres-13
+
+docker tag library/busybox:1.33.1  customproxy/minio:minopui-ls-library-busybox-1.33.1
+
+
+--------Monitoring:
+
+docker tag quay.io/prometheus/prometheus:latest  customproxy/minio:minopui-mon-quay-prometheus-4mar2023
+
+docker tag library/alpine:latest  customproxy/minio:minopui-mon-library-alpine-4mar2023
+
+docker tag library/busybox:1.33.1  customproxy/minio:minopui-mon-library-busybox-1.33.1

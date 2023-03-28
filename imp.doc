@@ -1,0 +1,153 @@
+			Rook is a storage orchestrator for Kubernetes that allows for the deployment and management of Ceph clusters. When running Rook-Ceph, there are several sysctl parameters that are recommended to be set to optimal values for performance and stability.
+
+Here are some recommended sysctl parameters for running Rook-Ceph:
+
+net.core.somaxconn: 
+This parameter sets the maximum number of connections that can be waiting in the listen queue for a socket. The recommended value is at least 1024.
+
+net.ipv4.tcp_max_syn_backlog: 
+This parameter sets the maximum number of outstanding SYN requests that can be queued waiting for an incomplete connection request. The recommended value is at least 4096.
+
+net.core.wmem_max and net.core.rmem_max: 
+These parameters control the maximum socket buffer size for sending and receiving data. The recommended value is at least 33554432 (32 MB).
+
+net.ipv4.tcp_rmem and net.ipv4.tcp_wmem: 
+These parameters control the default size of the TCP receive and send buffer respectively. The recommended value is "4096 87380 33554432".
+
+vm.max_map_count: 
+This parameter sets the maximum number of memory map areas a process can have. The recommended value is at least 262144.
+
+fs.file-max: 
+This parameter sets the maximum number of file handles that can be opened by the system. The recommended value is at least 1048576.
+
+It's important to note that the optimal values for these parameters can vary depending on your specific workload and environment. It's recommended to consult the official Rook documentation and your system administrator before making any changes to your sysctl settings.
+
+
+
+-----------------------------------------------------------------------------------------------------
+
+
+You can use mc (MinIO Client) along with Kubernetes volume snapshots to backup data inside a Kubernetes PVC (Persistent Volume Claim) into MinIO. Here are the general steps:
+
+Create a MinIO bucket to store the backup.
+
+Install mc on your local machine. You can download it from the MinIO website: https://docs.min.io/docs/minio-client-quickstart-guide.html
+
+Configure mc to connect to your MinIO instance by running the following command:
+
+php
+Copy code
+mc config host add <alias> <your-minio-url> <your-access-key> <your-secret-key>
+Replace <alias> with a name of your choice to identify the MinIO instance, <your-minio-url> with the URL of your MinIO instance, <your-access-key> with your MinIO access key, and <your-secret-key> with your MinIO secret key.
+
+Take a snapshot of the Kubernetes PVC you want to backup using the kubectl command:
+
+php
+Copy code
+kubectl snapshot volumeclaims <pvc-name> --snapshot-name <snapshot-name>
+Replace <pvc-name> with the name of the PVC you want to backup, and <snapshot-name> with a name for the snapshot.
+
+Create a tarball of the snapshot data using the mc command:
+
+php
+Copy code
+mc snapshot export <alias>/<bucket-name>/<snapshot-name>.tar.gz <snapshot-name>
+Replace <alias> with the name of the MinIO instance alias you configured in step 3, <bucket-name> with the name of the MinIO bucket you created in step 1, and <snapshot-name> with the name of the snapshot you created in step 4.
+
+Verify that the tarball was created successfully using the mc command:
+
+bash
+Copy code
+mc ls <alias>/<bucket-name>
+This should show the backup tarball that you just created.
+
+You can now copy the tarball to another location for safekeeping, or use mc to restore the backup to a new Kubernetes cluster if needed. Note that the restore process will involve creating a new PVC and then restoring the data from the backup tarball.a
+
+------------------------------------------------------------------------------------------------------------------------------------
+
+You can use the mc command-line tool to get the value of the "Erasure Code Stripe Size" of a running MinIO cluster.
+
+Here are the steps:
+
+Install mc on your local machine. You can download it from the MinIO website: https://docs.min.io/docs/minio-client-quickstart-guide.html
+
+Configure mc to connect to your MinIO cluster by running the following command:
+
+php
+Copy code
+mc config host add <alias> <your-minio-url> <your-access-key> <your-secret-key>
+Replace <alias> with a name of your choice to identify the MinIO cluster, <your-minio-url> with the URL of your MinIO cluster, <your-access-key> with your MinIO access key, and <your-secret-key> with your MinIO secret key.
+
+Use the mc admin info command to get the information about the running MinIO cluster:
+
+bash
+Copy code
+mc admin info <alias>
+Replace <alias> with the name of the MinIO cluster alias you configured in step 2.
+
+The output of the mc admin info command will contain a section called erasure that lists the erasure code profile being used by the cluster, which includes the "Erasure Code Stripe Size" value.
+
+Here's an example output of the mc aadmin info command:
+
+json
+Copy code
+{
+    "erasure": {
+        "defaultDataBlocks": 10,
+        "defaultParityBlocks": 4,
+        "algorithm": "reed_sol_van",
+        "codingChunkSize": 4194304,
+        "dataChunkSize": 4194304,
+        "id": 1,
+        "index": 0,
+        "m": 14,
+        "n": 18,
+        "parityChunkSize": 1048576
+    },
+    ...
+}
+
+In this example output, the "Erasure Code Stripe Size" value is 4MB, which is the dataChunkSize value of the erasure code profile being used by the MinIO cluster.
+
+
+-------------------------------------------------------------------------------------------------------------------------
+
+
+To find the link between a Placement Group (PG) and a RBD (RADOS Block Device) image in Ceph, you can use the ceph pg dump_stuck command. Here are the steps:
+
+SSH into one of the Ceph monitors or OSDs.
+
+Run the ceph pg dump_stuck command and grep for the RBD image name:
+
+arduino
+Copy code
+ceph pg dump_stuck | grep <rbd-image-name>
+Replace <rbd-image-name> with the name of the RBD image you want to find.
+
+For example:
+
+perl
+Copy code
+ceph pg dump_stuck | grep my-rbd-image
+Look for the acting field in the output, which will show the OSDs that are currently hosting the PG.
+
+Check the OSDs for the RBD image by running the following command:
+
+arduino
+Copy code
+rados -p rbd ls | grep <rbd-image-name>
+Replace <rbd-image-name> with the name of the RBD image you want to find.
+
+For example:
+
+perl
+Copy code
+rados -p rbd ls | grep my-rbd-image
+This will show the OSDs that are hosting the RBD image.
+
+Match the OSDs that are hosting the PG with the OSDs that are hosting the RBD image to determine the link between the PG and the RBD image.
+
+Note that a PG can host multiple RBD images, so you may need to repeat steps 2-4 for each RBD image hosted by the PG.
+
+
+------------------------------------------------------------------------------------------------------------------------------------

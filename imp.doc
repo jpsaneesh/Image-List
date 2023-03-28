@@ -1,4 +1,4 @@
-			Rook is a storage orchestrator for Kubernetes that allows for the deployment and management of Ceph clusters. When running Rook-Ceph, there are several sysctl parameters that are recommended to be set to optimal values for performance and stability.
+Rook is a storage orchestrator for Kubernetes that allows for the deployment and management of Ceph clusters. When running Rook-Ceph, there are several sysctl parameters that are recommended to be set to optimal values for performance and stability.
 
 Here are some recommended sysctl parameters for running Rook-Ceph:
 

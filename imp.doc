@@ -35,29 +35,24 @@ Install mc on your local machine. You can download it from the MinIO website: ht
 
 Configure mc to connect to your MinIO instance by running the following command:
 
-php
-Copy code
+
 mc config host add <alias> <your-minio-url> <your-access-key> <your-secret-key>
 Replace <alias> with a name of your choice to identify the MinIO instance, <your-minio-url> with the URL of your MinIO instance, <your-access-key> with your MinIO access key, and <your-secret-key> with your MinIO secret key.
 
 Take a snapshot of the Kubernetes PVC you want to backup using the kubectl command:
 
-php
-Copy code
+
 kubectl snapshot volumeclaims <pvc-name> --snapshot-name <snapshot-name>
 Replace <pvc-name> with the name of the PVC you want to backup, and <snapshot-name> with a name for the snapshot.
 
 Create a tarball of the snapshot data using the mc command:
 
-php
-Copy code
 mc snapshot export <alias>/<bucket-name>/<snapshot-name>.tar.gz <snapshot-name>
 Replace <alias> with the name of the MinIO instance alias you configured in step 3, <bucket-name> with the name of the MinIO bucket you created in step 1, and <snapshot-name> with the name of the snapshot you created in step 4.
 
 Verify that the tarball was created successfully using the mc command:
 
-bash
-Copy code
+
 mc ls <alias>/<bucket-name>
 This should show the backup tarball that you just created.
 
@@ -73,15 +68,13 @@ Install mc on your local machine. You can download it from the MinIO website: ht
 
 Configure mc to connect to your MinIO cluster by running the following command:
 
-php
-Copy code
+
 mc config host add <alias> <your-minio-url> <your-access-key> <your-secret-key>
 Replace <alias> with a name of your choice to identify the MinIO cluster, <your-minio-url> with the URL of your MinIO cluster, <your-access-key> with your MinIO access key, and <your-secret-key> with your MinIO secret key.
 
 Use the mc admin info command to get the information about the running MinIO cluster:
 
-bash
-Copy code
+
 mc admin info <alias>
 Replace <alias> with the name of the MinIO cluster alias you configured in step 2.
 
@@ -89,8 +82,7 @@ The output of the mc admin info command will contain a section called erasure th
 
 Here's an example output of the mc aadmin info command:
 
-json
-Copy code
+
 {
     "erasure": {
         "defaultDataBlocks": 10,
@@ -126,22 +118,18 @@ Replace <rbd-image-name> with the name of the RBD image you want to find.
 
 For example:
 
-perl
-Copy code
 ceph pg dump_stuck | grep my-rbd-image
 Look for the acting field in the output, which will show the OSDs that are currently hosting the PG.
 
 Check the OSDs for the RBD image by running the following command:
 
-arduino
-Copy code
+
 rados -p rbd ls | grep <rbd-image-name>
 Replace <rbd-image-name> with the name of the RBD image you want to find.
 
 For example:
 
-perl
-Copy code
+
 rados -p rbd ls | grep my-rbd-image
 This will show the OSDs that are hosting the RBD image.
 

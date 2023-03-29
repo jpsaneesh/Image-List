@@ -139,3 +139,24 @@ Note that a PG can host multiple RBD images, so you may need to repeat steps 2-4
 
 
 ------------------------------------------------------------------------------------------------------------------------------------
+
+
+The recommended sysctl parameters for installing Minio through Minio Operator on Kubernetes depend on the specific configuration of your Kubernetes cluster and the requirements of your Minio deployment. However, there are some general sysctl parameters that are commonly recommended for running Minio on Kubernetes:
+
+fs.file-max:
+This parameter sets the maximum number of file handles that can be opened by the system. For optimal performance, it is recommended to set this value to at least 65,536 or higher.
+
+net.core.somaxconn:
+This parameter sets the maximum number of incoming connections that can be queued by the system. For Minio, it is recommended to set this value to at least 1024 or higher.
+
+net.ipv4.tcp_tw_recycle:
+This parameter enables TCP connection recycling, which can improve the performance of the system by reducing the number of TIME_WAIT sockets. It is recommended to set this value to 1.
+
+net.ipv4.tcp_fin_timeout:
+This parameter sets the time that a TCP connection stays in the TIME_WAIT state before being closed. For Minio, it is recommended to set this value to 15 or lower.
+
+net.ipv4.tcp_keepalive_time:
+This parameter sets the time that a TCP connection is idle before sending a keepalive packet. For Minio, it is recommended to set this value to 600 or lower.
+
+It is important to note that these recommendations may not be suitable for all deployments, and you should consult with your Kubernetes and Minio administrators to determine the optimal sysctl parameters for your specific environment. Additionally, you should always test any changes to sysctl parameters in a non-production environment before implementing them in production.
+

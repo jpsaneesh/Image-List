@@ -210,3 +210,46 @@ proxy_pass specifies the upstream group to forward requests to.
 proxy_set_header adds headers to the requests that are forwarded to the MinIO servers, including the original host, IP address, and client IP address.
 Make sure to replace minio-server-1, minio-server-2, and minio-server-3 with the hostnames or IP addresses of your MinIO servers, and minio.example.com with the domain name or IP address of your load balancer. Also, make sure to configure SSL/TLS if you plan to use HTTPS instead of HTTP.
 
+------------------------------------------------------------------------------------------------------------------------------------------
+
+http {
+    upstream minio_servers {
+        server minio-server-1:9000;
+        server minio-server-2:9000;
+        server minio-server-3:9000;
+    }
+
+    server {
+        listen 80;
+        server_name minio.example.com;
+
+        # Redirect all HTTP traffic to HTTPS
+        return 301 https://$host$request_uri;
+    }
+
+    server {
+        listen 443 ssl;
+        server_name minio.example.com;
+
+        # SSL/TLS configuration
+        ssl_certificate /path/to/cert.crt;
+        ssl_certificate_key /path/to/key.key;
+        ssl_protocols TLSv1.2 TLSv1.3;
+        ssl_prefer_server_ciphers on;
+        ssl_ciphers "EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH";
+
+        location / {
+            proxy_pass http://minio_servers;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        }
+    }
+}
+In this configuration, we've added an additional server block to listen on port 443 for HTTPS traffic. Here are the main differences:
+
+listen 443 ssl; specifies that this server block will listen on port 443 for HTTPS traffic.
+ssl_certificate and ssl_certificate_key point to the SSL/TLS certificate and key files for your domain.
+ssl_protocols specifies which SSL/TLS protocols are supported.
+ssl_ciphers specifies the list of ciphers that Nginx will use to negotiate the SSL/TLS connection.
+Additionally, we've added a 301 redirect in the first server block to redirect all HTTP traffic to HTTPS. Make sure to replace minio-server-1, minio-server-2, and minio-server-3 with the hostnames or IP addresses of your MinIO servers, and minio.example.com with the domain name or IP address of your load balancer.

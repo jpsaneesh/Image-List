@@ -180,3 +180,33 @@ The hostPath volume is then mounted into the container as a local file system.
 In summary, the "direct-csi-min-io" storage class uses the MinIO CSI driver to manage storage volumes directly on the MinIO server, while the "directpv-min-io" storage class uses Kubernetes hostPath volumes to provision storage on the worker node where the application is running. The choice between the two storage classes depends on the specific requirements and constraints of your application and infrastructure.
 
 
+--------------------------------------------------------------------------------------------------------------------------------------
+
+http {
+    upstream minio_servers {
+        server minio-server-1:9000;
+        server minio-server-2:9000;
+        server minio-server-3:9000;
+    }
+
+    server {
+        listen 80;
+        server_name minio.example.com;
+
+        location / {
+            proxy_pass http://minio_servers;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        }
+    }
+}
+In this configuration:
+
+upstream minio_servers defines a group of MinIO servers that Nginx will load balance requests to.
+server defines a virtual server that listens on port 80 and responds to requests for minio.example.com.
+location / defines the location where requests will be forwarded to the MinIO servers.
+proxy_pass specifies the upstream group to forward requests to.
+proxy_set_header adds headers to the requests that are forwarded to the MinIO servers, including the original host, IP address, and client IP address.
+Make sure to replace minio-server-1, minio-server-2, and minio-server-3 with the hostnames or IP addresses of your MinIO servers, and minio.example.com with the domain name or IP address of your load balancer. Also, make sure to configure SSL/TLS if you plan to use HTTPS instead of HTTP.
+

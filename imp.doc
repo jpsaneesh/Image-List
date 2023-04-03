@@ -324,3 +324,25 @@ The "mc heal" command scans the object metadata and repairs any inconsistencies 
 On the other hand, the "mc heal --scan deep" command does a more thorough scan. In addition to checking and repairing the object metadata, it also performs a deep scan of the object's data. This command reads all the bytes of each object in the bucket to verify that the data stored in the backend storage matches the data stored in the metadata. This ensures that the data is fully intact and not corrupted.
 
 It is important to note that the "mc heal --scan deep" command can be resource-intensive and can take longer to complete than the "mc heal" command. It is recommended to use the "mc heal --scan deep" command when there are suspected data corruption issues or to perform a periodic deep scan to ensure data integrity.
+
+------------------------------------------------------------------------------------------------------------------------------------------
+
+The "csi.storage.k8s.io/fstype" option in a Rook-Ceph storage class is used to specify the file system type to be used when creating a new volume.
+
+When a new volume is created using the Rook-Ceph storage class, the Kubernetes CSI (Container Storage Interface) driver will create a file system on the volume based on the value of this option. If this option is not specified, the file system type defaults to ext4.
+
+For example, to create a new Rook-Ceph storage class with the "xfs" file system type, you can use the following YAML definition:
+
+
+
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: rook-ceph-xfs
+provisioner: rook-ceph.rbd.csi.ceph.com
+parameters:
+  pool: replicated-pool
+  csi.storage.k8s.io/fstype: xfs
+This will create a new Rook-Ceph storage class named "rook-ceph-xfs" with the "xfs" file system type. When a new volume is created using this storage class, the CSI driver will create an XFS file system on the volume.
+
+Note that the available file system types may vary depending on the underlying storage platform and the CSI driver being used.

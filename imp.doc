@@ -114,8 +114,6 @@ SSH into one of the Ceph monitors or OSDs.
 
 Run the ceph pg dump_stuck command and grep for the RBD image name:
 
-arduino
-Copy code
 ceph pg dump_stuck | grep <rbd-image-name>
 Replace <rbd-image-name> with the name of the RBD image you want to find.
 

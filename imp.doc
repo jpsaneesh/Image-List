@@ -313,3 +313,14 @@ Backup strategy: Have a proper backup strategy in place to ensure data is recove
 Test the deployment: Before deploying Minio in production, perform thorough testing to ensure that it is operating correctly and can handle the expected workload.
 
 By following these best practices, you can ensure that your Minio deployment on Kubernetes using the Minio Operator is reliable, efficient, and scalable.
+
+
+------------------------------------------------------------------------------------------------------------------------------------------
+
+"mc heal" and "mc heal --scan deep" are both commands in the Minio Client (mc) tool used for data recovery and integrity checking, but they differ in the extent of their scanning.
+
+The "mc heal" command scans the object metadata and repairs any inconsistencies found in the metadata. It checks if the object's metadata is consistent with the data stored in the backend storage. If inconsistencies are found, it repairs them.
+
+On the other hand, the "mc heal --scan deep" command does a more thorough scan. In addition to checking and repairing the object metadata, it also performs a deep scan of the object's data. This command reads all the bytes of each object in the bucket to verify that the data stored in the backend storage matches the data stored in the metadata. This ensures that the data is fully intact and not corrupted.
+
+It is important to note that the "mc heal --scan deep" command can be resource-intensive and can take longer to complete than the "mc heal" command. It is recommended to use the "mc heal --scan deep" command when there are suspected data corruption issues or to perform a periodic deep scan to ensure data integrity.

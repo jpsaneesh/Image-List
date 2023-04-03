@@ -381,48 +381,33 @@ Recovering gray objects in the mc heal command can be a challenging task since g
 
 Identify the gray objects: First, you need to identify the gray objects in your bucket. You can do this by running the mc admin check command and looking for the output of gray objects. For example, you can use the following command to check the status of your bucket:
 
-css
-Copy code
 mc admin check myminio/mybucket --fix --verbose
 Move the gray objects to a new bucket: To recover the gray objects, you can try moving them to a new bucket using the mc cp command. This command will create a new copy of the gray objects, and you can then delete the original objects.
 
-bash
-Copy code
 mc cp myminio/mybucket/gray-object myminio/mybucket-fixed/gray-object
 You can use a loop to copy all the gray objects to the new bucket, as shown below:
 
-bash
-Copy code
 for object in $(mc ls myminio/mybucket | grep -E '\[gray\]'); do
   mc cp myminio/mybucket/"$object" myminio/mybucket-fixed/"$object"
 done
 Delete the original gray objects: Once you have copied the gray objects to a new bucket, you can delete the original gray objects using the mc rm command.
 
-bash
-Copy code
 mc rm myminio/mybucket/gray-object
 Similarly, you can use a loop to delete all the gray objects:
 
-bash
-Copy code
 for object in $(mc ls myminio/mybucket | grep -E '\[gray\]'); do
   mc rm myminio/mybucket/"$object"
 done
 Move the fixed objects back to the original bucket: Once you have copied the gray objects to a new bucket and deleted the original gray objects, you can move the fixed objects back to the original bucket using the mc mv command.
 
-bash
-Copy code
 mc mv myminio/mybucket-fixed/gray-object myminio/mybucket/gray-object
 Similarly, you can use a loop to move all the fixed objects back to the original bucket:
 
-bash
-Copy code
 for object in $(mc ls myminio/mybucket-fixed | grep -v '\[gray\]'); do
   mc mv myminio/mybucket-fixed/"$object" myminio/mybucket/"$object"
 done
 Rerun the mc heal command: Once you have moved the fixed objects back to the original bucket, you can rerun the mc heal command to check if the gray objects have been recovered.
 
-sql
-Copy code
+
 mc admin check myminio/mybucket --fix
 Note that the above steps may not work in all cases, and it is recommended to backup your data before attempting any recovery actions. If the above steps do not recover the gray objects, you may need to contact Minio support for further assistance.

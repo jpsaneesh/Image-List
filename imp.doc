@@ -346,3 +346,32 @@ parameters:
 This will create a new Rook-Ceph storage class named "rook-ceph-xfs" with the "xfs" file system type. When a new volume is created using this storage class, the CSI driver will create an XFS file system on the volume.
 
 Note that the available file system types may vary depending on the underlying storage platform and the CSI driver being used.
+
+
+------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+Grey objects in Minio are objects that are not fully repaired by the Minio heal command, meaning that they still have some inconsistencies or data corruption issues.
+
+To fix grey objects in Minio, you can try the following steps:
+
+Check the Minio server logs to determine the cause of the inconsistencies or data corruption issues. This can help you identify the underlying problem and take appropriate actions to prevent it from recurring.
+
+Use the "mc cp" command to copy the grey objects to a new location. This will create a new copy of the object that is free of any inconsistencies or data corruption issues. For example, you can use the following command to copy a grey object named "myobject" from a bucket named "mybucket" to a new bucket named "mybucket-fixed":
+
+
+mc cp mybucket/myobject mybucket-fixed/myobject
+Delete the original grey object from the Minio bucket using the "mc rm" command:
+
+mc rm mybucket/myobject
+Rename the new copy of the object to the original object name using the "mc mv" command:
+
+mc mv mybucket-fixed/myobject mybucket/myobject
+Run the Minio heal command again to check if the grey objects have been fixed:
+
+mc admin check myminio --all --fix
+If the above steps do not resolve the grey objects, you can try using the "--force" option with the Minio heal command to force the repair process. This option may cause data loss, so use it with caution:
+
+mc admin check myminio --all --fix --force
+Note that the "--fix" and "--force" options are only available in Minio version 2021-02-25 or later.
